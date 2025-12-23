@@ -1,19 +1,59 @@
 import Application from '../models/Application.js'
+
+import { getGridFSBucket } from "../config/gridfs.js";
+
 export const applyJob = async (req, res) => {
-    const application = await Application.create({
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Resume is required" });
+    }
+
+    const bucket = getGridFSBucket();
+
+    const uploadStream = bucket.openUploadStream(
+      req.file.originalname,
+      {
+        contentType: req.file.mimetype,
+        metadata: {
+          applicantId: req.user._id,
+          jobId: req.params.jobId
+        }
+      }
+    );
+
+    uploadStream.end(req.file.buffer);
+
+    uploadStream.on("finish", async () => {
+      // ✅ THIS IS THE FIX
+      const application = await Application.create({
         job: req.params.jobId,
-        applicant: req.user._id
-    })
+        applicant: req.user._id,
+        resumeFileId: uploadStream.id
+      });
 
-    res.json(application)
-}
+      res.status(201).json({
+        message: "Job applied successfully",
+        application
+      });
+    });
 
+    uploadStream.on("error", (err) => {
+      console.error("GridFS error:", err);
+      res.status(500).json({ message: "Resume upload failed" });
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 export const getApplicantsByJob = async (req, res) => {
-    const applications = await Application.find({ job: req.params.jobId })
-        .populate("applicant", "name email resume")
+    const applicants = await Application.find({ job: req.params.jobId })
+        .populate("userId", "name email")
+        .select("resumeFileId status appliedAt");
 
-    res.json(applications)
+    res.json(applicants)
 }
 
 
