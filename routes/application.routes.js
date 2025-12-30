@@ -1,5 +1,5 @@
 import express from 'express'
-import { applyJob, getApplicantsByJob, updateApplicationStatus } from '../controllers/application.controller.js'
+import { applyJob, getApplicants, getApplicantsByJob, updateApplicationStatus } from '../controllers/application.controller.js'
 import {protect} from '../middleware/auth.middleware.js'
 import { authorize } from '../middleware/role.middleware.js'
 import { upload } from '../utils/resumeUpload.js'

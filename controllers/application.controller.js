@@ -48,6 +48,12 @@ export const applyJob = async (req, res) => {
   }
 };
 
+
+export const getApplicants=async (req,res)=>{
+    const jobs=await Application.find().sort({createdAt:-1})
+    res.json(jobs)
+}
+
 export const getApplicantsByJob = async (req, res) => {
     const applicants = await Application.find({ job: req.params.jobId })
         .populate("userId", "name email")

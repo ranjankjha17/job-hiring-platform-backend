@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 
 export const register = async (req, res) => {
     const { name, email, password, role } = req.body
-
+    // console.table({ name, email, password, role })
     const userExists = await User.findOne({ email })
     if (userExists) return res.status(400).json({ message: "User exists" })
 
@@ -17,9 +17,13 @@ export const register = async (req, res) => {
         role
     })
 
-    res.json({
-        _id: user._id,
-        token: generateToken(user._id)
+    res.status(200).json({
+        success: true,
+        message: "Registration Successfull",
+        // data:{
+        // _id: user._id,
+        // token: generateToken(user._id)
+        // }
     })
 }
 
@@ -33,10 +37,15 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" })
 
-    res.json({
-        _id: user._id,
-        role: user.role,
-        token: generateToken(user._id)
+    res.status(200).json({
+        success: true,
+        message: "Login Successfull",
+        data: {
+            _id: user._id,
+            name: user.name,
+            role: user.role,
+            token: generateToken(user._id)
+        }
     })
 }
 
