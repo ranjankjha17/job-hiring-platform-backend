@@ -30,9 +30,3 @@ export const downloadApplicantResume = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-export const getApplicants=async (req,res)=>{
-    const jobs=await Application.find().sort({createdAt:-1})
-    res.json(jobs)
-}

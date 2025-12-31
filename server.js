@@ -10,7 +10,8 @@ import { initGridFS } from './config/gridfs.js'
 import resumeRoutes from './routes/resume.routes.js'
 import adminRoutes from './routes/admin.routes.js'
 import recruiterRoutes from './routes/recruiter.routes.js'
-
+import applicantRoutes from './routes/applicant.routes.js'
+import fileRoutes from './routes/fileRoutes.js'
 const app=express()
 app.use(cors())
 app.use(express.json())
@@ -27,6 +28,9 @@ app.use('/api/apply',applicationRoutes)
 app.use('/api/resume',resumeRoutes)
 app.use('/api/admin',adminRoutes)
 app.use('/api/recruiter',recruiterRoutes)
+app.use('/api/applicants',applicantRoutes)
+app.use("/api/files", fileRoutes)
+
 
 app.listen(process.env.PORT,()=>console.log(`Server is running on port ${[process.env.PORT]}`)
 )
