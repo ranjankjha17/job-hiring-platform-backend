@@ -12,6 +12,9 @@ import adminRoutes from './routes/admin.routes.js'
 import recruiterRoutes from './routes/recruiter.routes.js'
 import applicantRoutes from './routes/applicant.routes.js'
 import fileRoutes from './routes/fileRoutes.js'
+import jobSeekerRoutes from './routes/jobSeeker.routes.js'
+import adminReportsRoutes from './routes/adminReports.routes.js'
+
 const app=express()
 app.use(cors())
 app.use(express.json())
@@ -27,9 +30,11 @@ app.use('/api/jobs',jobRoutes)
 app.use('/api/apply',applicationRoutes)
 app.use('/api/resume',resumeRoutes)
 app.use('/api/admin',adminRoutes)
+app.use('/api/admin/reports',adminReportsRoutes)
 app.use('/api/recruiter',recruiterRoutes)
 app.use('/api/applicants',applicantRoutes)
 app.use("/api/files", fileRoutes)
+app.use("/api/job-seeker", jobSeekerRoutes);
 
 
 app.listen(process.env.PORT,()=>console.log(`Server is running on port ${[process.env.PORT]}`)

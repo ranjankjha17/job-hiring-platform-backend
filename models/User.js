@@ -1,21 +1,26 @@
 import mongoose from "mongoose";
 
-const userSchema=new mongoose.Schema(
+const userSchema = new mongoose.Schema(
     {
-        name:String,
-        email:{type:String,unique:true},
-        password:String,
-        role:{
-            type:String,
-            enum:["jobseeker","recruiter","admin"],
-            default:"jobseeker"
+        name: String,
+        email: { type: String, unique: true },
+        password: String,
+        role: {
+            type: String,
+            enum: ["jobseeker", "recruiter", "admin"],
+            default: "jobseeker"
         },
-        resume:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"resumes.files"
+        isBlocked: {
+            type: Boolean,
+            default: false
+        },
+
+        resume: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "resumes.files"
         }
     },
-    {timestamps:true}
+    { timestamps: true }
 )
 
-export default mongoose.model("User",userSchema)
+export default mongoose.model("User", userSchema)
