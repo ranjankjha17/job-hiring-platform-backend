@@ -8,11 +8,70 @@ export const createJob=async (req,res)=>{
     res.json(job)
 }
 
-// export const getJobs=async (req,res)=>{
-//     const jobs=await Job.find().sort({createdAt:-1})
-//     res.json(jobs)
-// }
 
+export const getPublicJobs = async (req, res) => {
+  try {
+    const { q, location, type } = req.query
+
+    const filter= {
+      status: 'open',
+      isBlocked: false
+    }
+
+    // 🔍 Search by title or company
+    if (q) {
+      filter.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { company: { $regex: q, $options: "i" } }
+      ]
+    }
+
+    // 🌍 Location filter
+    if (location) {
+      filter.location = location
+    }
+
+    // 💼 Job type filter
+    if (type) {
+      filter.type = type
+    }
+
+    const jobs = await Job.find(filter)
+      .sort({ createdAt: -1 })
+      .select(
+        "title company location type salary createdAt"
+      )
+
+    res.status(200).json(jobs)
+  } catch (error) {
+    console.error("GET PUBLIC JOBS ERROR:", error)
+
+    res.status(500).json({
+      message: "Failed to fetch jobs"
+    })
+  }
+}
+
+export const getJobDetails = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const job = await Job.findOne({
+      _id: id,
+      status:'open',
+      isBlocked: false
+    }).populate("company", "name logo")
+
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" })
+    }
+console.log(res.json(job))
+    res.json(job)
+  } catch (error) {
+    console.error("GET JOB DETAILS ERROR:", error)
+    res.status(500).json({ message: "Failed to load job" })
+  }
+}
 
 export const getJobs = async (req, res) => {
   try {

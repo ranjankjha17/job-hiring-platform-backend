@@ -10,6 +10,13 @@ const userSchema = new mongoose.Schema(
             enum: ["jobseeker", "recruiter", "admin"],
             default: "jobseeker"
         },
+        profile: {
+            phone: String,
+            location: String,
+            skills: [String],
+            experience: String
+        },
+
         isBlocked: {
             type: Boolean,
             default: false

@@ -1,9 +1,11 @@
 import express from 'express'
-import { createJob, getJobs } from '../controllers/job.controller.js'
+import { createJob, getJobDetails, getJobs, getPublicJobs } from '../controllers/job.controller.js'
 import {protect} from '../middleware/auth.middleware.js'
 import {authorize} from '../middleware/role.middleware.js'
 
 const router=express.Router()
+router.get('/public',getPublicJobs)
+router.get("/public/:id", getJobDetails)
 router.get('/',protect,authorize("recruiter"),getJobs)
 router.post('/',protect,authorize("recruiter"),createJob)
 
