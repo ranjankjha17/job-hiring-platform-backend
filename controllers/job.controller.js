@@ -1,3 +1,4 @@
+import Application from '../models/Application.js'
 import Job from '../models/Job.js'
 export const createJob=async (req,res)=>{
     const job=await Job.create({
@@ -65,7 +66,7 @@ export const getJobDetails = async (req, res) => {
     if (!job) {
       return res.status(404).json({ message: "Job not found" })
     }
-console.log(res.json(job))
+// console.log(res.json(job))
     res.json(job)
   } catch (error) {
     console.error("GET JOB DETAILS ERROR:", error)
@@ -95,4 +96,17 @@ export const getJobs = async (req, res) => {
     console.error("Get jobs error:", error)
     res.status(500).json({ message: "Server error" })
   }
+}
+
+
+export const isJobApplied = async (req, res) => {
+  const userId = req.user.id
+  const { jobId } = req.params
+
+  const application = await Application.findOne({
+    job: jobId,
+    applicant: userId
+  })
+
+  res.json({ applied: !!application })
 }

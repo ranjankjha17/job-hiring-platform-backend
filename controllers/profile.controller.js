@@ -38,25 +38,31 @@ export const updateProfile = async (req, res) => {
 }
 
 
+
 export const uploadResume = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: "Resume required" })
+      return res.status(400).json({ message: "No file uploaded" })
     }
 
-    const bucket = getGridFSBucket()
-    const uploadStream = bucket.openUploadStream(req.file.originalname)
+    const userId = req.user.id // from auth middleware
+    const fileId = req.file.id // GridFS file id
 
-    uploadStream.end(req.file.buffer)
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { resume: fileId },
+      { new: true }
+    )
 
-    uploadStream.on("finish", async () => {
-      await User.findByIdAndUpdate(req.user.id, {
-        resumeFileId: uploadStream.id
-      })
-
-      res.json({ message: "Resume uploaded successfully" })
+    return res.status(200).json({
+      success: true,
+      message: "Resume uploaded successfully",
+      resume: fileId,
+      user,
     })
-  } catch (err) {
-    res.status(500).json({ message: "Resume upload failed" })
+
+  } catch (error) {
+    console.error("UPLOAD RESUME ERROR:", error)
+    return res.status(500).json({ message: "Resume upload failed" })
   }
 }

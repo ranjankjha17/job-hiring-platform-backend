@@ -1,44 +1,6 @@
 import mongoose from "mongoose";
 import { getGridFSBucket } from "../config/gridfs.js";
-
-
-export const uploadResume = (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const gridFSBucket = getGridFSBucket();
-
-    const uploadStream = gridFSBucket.openUploadStream(
-      req.file.originalname,
-      { contentType: req.file.mimetype }
-    );
-
-    const fileId = uploadStream.id;
-
-    uploadStream.end(req.file.buffer);
-
-    uploadStream.on("finish", () => {
-      res.status(201).json({
-        message: "Resume uploaded successfully",
-        fileId 
-      });
-    });
-
-    uploadStream.on("error", (err) => {
-      console.error(err);
-      res.status(500).json({ message: "Upload failed" });
-    });
-
-  } catch (error) {
-    console.error(error.message);
-    res.status(503).json({
-      message: "Storage not ready. Try again."
-    });
-  }
-};
-
+import User from "../models/User.js";
 
 
 // export const uploadResume = (req, res) => {
@@ -51,26 +13,22 @@ export const uploadResume = (req, res) => {
 
 //     const uploadStream = gridFSBucket.openUploadStream(
 //       req.file.originalname,
-//       {
-//         contentType: req.file.mimetype,
-//         metadata: {
-//           uploadedAt: new Date()
-//         }
-//       }
+//       { contentType: req.file.mimetype }
 //     );
+
+//     const fileId = uploadStream.id;
 
 //     uploadStream.end(req.file.buffer);
 
-//     uploadStream.on("finish", (file) => {
-//       // ✅ file._id is guaranteed here
+//     uploadStream.on("finish", () => {
 //       res.status(201).json({
 //         message: "Resume uploaded successfully",
-//         fileId: file._id
+//         fileId 
 //       });
 //     });
 
 //     uploadStream.on("error", (err) => {
-//       console.error("GridFS upload error:", err);
+//       console.error(err);
 //       res.status(500).json({ message: "Upload failed" });
 //     });
 
@@ -81,6 +39,51 @@ export const uploadResume = (req, res) => {
 //     });
 //   }
 // };
+
+
+
+export const uploadResume = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" })
+    }
+
+    const bucket = getGridFSBucket()
+
+    const uploadStream = bucket.openUploadStream(
+      req.file.originalname,
+      { contentType: req.file.mimetype }
+    )
+
+    uploadStream.end(req.file.buffer)
+
+    uploadStream.on("finish", async () => {
+      // ✅ SAVE CORRECT GridFS FILE ID
+      const user = await User.findByIdAndUpdate(
+        req.user.id,
+        { resume: uploadStream.id },
+        { new: true }
+      )
+
+      res.status(201).json({
+        message: "Resume uploaded successfully",
+        resumeId: uploadStream.id,
+        user
+      })
+    })
+
+    uploadStream.on("error", (err) => {
+      console.error("GRIDFS ERROR:", err)
+      res.status(500).json({ message: "Upload failed" })
+    })
+
+  } catch (error) {
+    console.error("UPLOAD RESUME ERROR:", error)
+    res.status(503).json({
+      message: "Storage not ready. Try again."
+    })
+  }
+}
 
 
 export const downloadResume = (req, res) => {
