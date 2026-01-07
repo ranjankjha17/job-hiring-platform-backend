@@ -2,46 +2,6 @@ import mongoose from "mongoose";
 import { getGridFSBucket } from "../config/gridfs.js";
 import User from "../models/User.js";
 
-
-// export const uploadResume = (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).json({ message: "No file uploaded" });
-//     }
-
-//     const gridFSBucket = getGridFSBucket();
-
-//     const uploadStream = gridFSBucket.openUploadStream(
-//       req.file.originalname,
-//       { contentType: req.file.mimetype }
-//     );
-
-//     const fileId = uploadStream.id;
-
-//     uploadStream.end(req.file.buffer);
-
-//     uploadStream.on("finish", () => {
-//       res.status(201).json({
-//         message: "Resume uploaded successfully",
-//         fileId 
-//       });
-//     });
-
-//     uploadStream.on("error", (err) => {
-//       console.error(err);
-//       res.status(500).json({ message: "Upload failed" });
-//     });
-
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(503).json({
-//       message: "Storage not ready. Try again."
-//     });
-//   }
-// };
-
-
-
 export const uploadResume = async (req, res) => {
   try {
     if (!req.file) {

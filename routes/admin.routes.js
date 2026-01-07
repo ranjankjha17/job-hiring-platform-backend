@@ -1,16 +1,3 @@
-// import express from 'express'
-// import { getAllUsers, getStats } from '../controllers/admin.controller.js'
-// import {protect} from "../middleware/auth.middleware.js"
-// import {authorize} from "../middleware/role.middleware.js"
-// const router=express.Router()
-
-// router.get("/stats",protect,authorize("admin"),getStats)
-// router.get("/users",protect,authorize("admin"),getAllUsers)
-
-// export default router
-
-
-
 import express from "express";
 import {protect} from "../middleware/auth.middleware.js"
 import {authorize} from "../middleware/role.middleware.js"
